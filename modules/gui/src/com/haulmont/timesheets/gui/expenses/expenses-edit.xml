@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (c) ${YEAR} ${PACKAGE_NAME}
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        xmlns:c="http://schemas.haulmont.com/cuba/screen/jpql_condition.xsd"
+        caption="msg://expensesEdit.caption"
+        focusComponent="form.task"
+        messagesPack="com.haulmont.timesheets.gui.expenses">
+    <data>
+        <instance id="expensesDc"
+                  class="com.haulmont.timesheets.entity.Expenses"
+            view="expenses-browse">
+            <loader id="expensesDl"/>
+            <collection id="tagsDc" property="tags"/>
+        </instance>
+        <collection id="optionOtherTagsDc" class="com.haulmont.timesheets.entity.Tag">
+            <loader id="optionOtherTagsDl">
+            </loader>
+        </collection>
+        <collection id="activeTasksDc" class="com.haulmont.timesheets.entity.Task">
+            <loader id="activeTasksDl">
+            </loader>
+        </collection>
+        <collection id="otherTagsDc" class="com.haulmont.timesheets.entity.Tag">
+            <loader id="otherTagsDl">
+            </loader>
+        </collection>
+        <collection id="activityTypesDc" class="com.haulmont.timesheets.entity.ActivityType">
+            <loader id="activityTypesDl">
+                <query>
+                    select e from ts$ActivityType e left join e.projects pr
+                    <condition>
+                        <or>
+                            <c:jpql>
+                                <c:where>pr = :project</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:where>e.projects is empty</c:where>
+                            </c:jpql>
+                        </or>
+                    </condition>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode width="AUTO"/>
+    <layout expand="scrollBox" spacing="true">
+        <scrollBox id="scrollBox" spacing="true">
+            <form id="form" dataContainer="expensesDc" width="500px">
+                <column width="100%">
+                    <dateField id="date" property="date"/>
+                    <lookupPickerField id="taskField" optionsContainer="activeTasksDc" property="task">
+                        <actions>
+                            <action id="lookup" type="picker_lookup"/>
+                            <action id="clear" type="picker_clear"/>
+                        </actions>
+                    </lookupPickerField>
+                    <lookupField id="activityType" optionsContainer="activityTypesDc" property="activityType" required="true"/>
+                    <lookupField id="user" property="user" enable="false"/>
+                    <textField id="amount" property="amount" required="true" requiredMessage="msg://required.amount" inputPrompt="msg://required.amount"/>
+                    <lookupField id="status" property="status"/>
+                    <textArea id="notes" property="notes" height="100px"/>
+                    <textArea id="rejectionReason" property="rejectionReason" height="100px"/>
+                </column>
+            </form>
+            <vbox id="tagsTokenListsBox" spacing="true"/>
+            <tokenList id="otherTagsTokenList"
+                       inline="true" width="500px">
+                <addButton icon="icons/plus-btn.png"/>
+                <lookup optionsContainer="optionOtherTagsDc"/>
+            </tokenList>
+        </scrollBox>
+        <hbox id="editActions" spacing="true">
+            <button action="windowCommitAndClose"/>
+            <button action="windowClose"/>
+        </hbox>
+    </layout>
+</window>

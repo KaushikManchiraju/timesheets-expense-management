@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (c) 2016 Haulmont
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        xmlns:c="http://schemas.haulmont.com/cuba/screen/jpql_condition.xsd"
+        caption="msg://editCaption"
+        focusComponent="form.task"
+        messagesPack="com.haulmont.timesheets.gui.timeentry">
+    <data>
+        <instance id="timeEntryDc"
+                  class="com.haulmont.timesheets.entity.TimeEntry"
+                  view="timeEntry-full">
+            <loader id="timeEntryDl"/>
+            <collection id="tagsDc" property="tags"/>
+        </instance>
+        <collection id="optionOtherTagsDc" class="com.haulmont.timesheets.entity.Tag">
+            <loader id="optionOtherTagsDl">
+            </loader>
+        </collection>
+        <collection id="activeTasksDc" class="com.haulmont.timesheets.entity.Task">
+            <loader id="activeTasksDl">
+            </loader>
+        </collection>
+        <collection id="otherTagsDc" class="com.haulmont.timesheets.entity.Tag">
+            <loader id="otherTagsDl">
+            </loader>
+        </collection>
+        <collection id="activityTypesDc" class="com.haulmont.timesheets.entity.ActivityType">
+            <loader id="activityTypesDl">
+                <query>
+                    select e from ts$ActivityType e left join e.projects pr
+                    <condition>
+                        <or>
+                            <c:jpql>
+                                <c:where>pr = :project</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:where>e.projects is empty</c:where>
+                            </c:jpql>
+                        </or>
+                    </condition>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode width="AUTO"/>
+    <layout expand="scrollBox" spacing="true">
+        <scrollBox id="scrollBox" spacing="true">
+            <form id="form" dataContainer="timeEntryDc" width="500px">
+                <column width="100%">
+                    <dateField id="date" property="date"/>
+                    <lookupPickerField id="taskField" optionsContainer="activeTasksDc" property="task">
+                        <actions>
+                            <action id="lookup" type="picker_lookup"/>
+                            <action id="clear" type="picker_clear"/>
+                        </actions>
+                    </lookupPickerField>
+                    <lookupField id="activityType" optionsContainer="activityTypesDc" property="activityType" required="true"/>
+                    <lookupField id="user" property="user" enable="false"/>
+                    <textField id="timeInMinutes" required="true" requiredMessage="msg://required.time" inputPrompt="msg://required.time"/>
+                    <lookupField id="status" property="status"/>
+                    <textArea id="description" property="description" height="100px"/>
+                    <textArea id="rejectionReason" property="rejectionReason" height="100px"/>
+                </column>
+            </form>
+            <vbox id="tagsTokenListsBox" spacing="true"/>
+            <tokenList id="otherTagsTokenList"
+                       inline="true" width="500px">
+                <addButton icon="icons/plus-btn.png"/>
+                <lookup optionsContainer="optionOtherTagsDc"/>
+            </tokenList>
+        </scrollBox>
+        <hbox id="editActions" spacing="true">
+            <button action="windowCommitAndClose"/>
+            <button action="windowClose"/>
+        </hbox>
+    </layout>
+</window>

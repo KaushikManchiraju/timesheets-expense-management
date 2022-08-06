@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (c) 2016 Haulmont
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://browseCaption"
+        focusComponent="projectsTable"
+        messagesPack="com.haulmont.timesheets.gui.project">
+    <data>
+        <collection id="projectsDc" class="com.haulmont.timesheets.entity.Project" view="project-with-parent">
+            <loader id="projectsDl">
+                <query>
+                    <![CDATA[select e
+                         from
+                            ts$Project e left join e.participants p
+                         where
+                            p.user = :user and (p.role.code = 'manager' or p.role.code = 'approver')
+                         ]]>
+                </query>
+            </loader>
+        </collection>
+        <collection id="tasksDc" class="com.haulmont.timesheets.entity.Task" view="task-full">
+            <loader id="tasksDl">
+                <query>
+                    <![CDATA[select t from ts$Task t where t.project = :project]]>
+                </query>
+            </loader>
+        </collection>
+        <collection id="participantsDc" class="com.haulmont.timesheets.entity.ProjectParticipant"
+                    view="projectParticipant-full">
+            <loader id="participantsDl">
+                <query>
+                    <![CDATA[select p from ts$ProjectParticipant p where p.project = :project]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <layout expand="split" spacing="true">
+        <filter id="filter" dataLoader="projectsDl">
+            <properties include=".*"/>
+        </filter>
+        <split id="split" orientation="horizontal" width="100%">
+            <vbox id="leftBox" height="100%" margin="false,true,false,false" spacing="true">
+                <treeTable id="projectsTable" height="100%" multiselect="true" width="100%"
+                           dataContainer="projectsDc" hierarchyProperty="parent">
+                    <actions>
+                        <action id="create" type="create"/>
+                        <action id="edit" type="edit"/>
+                        <action id="remove" type="remove"/>
+                        <action id="excel" type="excel"/>
+                    </actions>
+                    <columns>
+                        <column id="name"/>
+                        <column id="code"/>
+                        <column id="client"/>
+                        <column id="status"/>
+                    </columns>
+                    <rowsCount/>
+                    <buttonsPanel id="buttonsPanel" alwaysVisible="true">
+                        <button id="createBtn" action="projectsTable.create" caption="msg://caption.createProject"/>
+                        <button id="editBtn" action="projectsTable.edit"/>
+                        <button id="removeBtn" action="projectsTable.remove"/>
+                        <button id="excelBtn" action="projectsTable.excel"/>
+                        <popupButton id="assignBtn" caption="msg://caption.assign"/>
+                    </buttonsPanel>
+                </treeTable>
+            </vbox>
+            <vbox id="rightBox" height="100%" margin="false,false,false,true">
+                <tabSheet height="100%">
+                    <tab id="tasks" caption="msg://caption.tasks" margin="true,false,false,false">
+                        <table id="tasksTable" height="100%" width="100%" dataContainer="tasksDc">
+                            <actions>
+                                <action id="create" type="create"/>
+                                <action id="edit" type="edit"/>
+                                <action id="remove" type="remove"/>
+                                <action id="switchStatus"/>
+                                <action id="excel" type="excel"/>
+                            </actions>
+                            <columns>
+                                <column id="name"/>
+                                <column id="code"/>
+                                <column id="type"/>
+                                <column id="status"/>
+                                <column id="defaultTagsList"/>
+                                <column id="requiredTagTypesList"/>
+                            </columns>
+                            <buttonsPanel id="taskButtonsPanel" alwaysVisible="true">
+                                <button id="taskCreateBtn" action="tasksTable.create"
+                                        caption="msg://caption.createTask"/>
+                                <button id="taskEditBtn" action="tasksTable.edit"/>
+                                <button id="tasRemoveBtn" action="tasksTable.remove"/>
+                                <button id="tasExcelBtn" action="tasksTable.excel"/>
+                                <button id="switchStatusBtn" action="tasksTable.switchStatus"/>
+                            </buttonsPanel>
+                        </table>
+                    </tab>
+                    <tab id="participants" caption="msg://caption.participants" margin="true,false,false,false">
+                        <table id="participantsTable" columnControlVisible="false" editable="true" height="100%"
+                               multiselect="true" width="100%" dataContainer="participantsDc">
+                            <actions>
+                                <action id="create" type="create"/>
+                                <action id="edit" type="edit"/>
+                                <action id="remove" type="remove"/>
+                                <action id="copy" caption="msg://caption.copy"/>
+                                <action id="excel" type="excel"/>
+                            </actions>
+                            <columns>
+                                <column id="user" link="true"/>
+                                <column id="role"/>
+                                <column id="user.position"/>
+                            </columns>
+                            <buttonsPanel>
+                                <button action="participantsTable.create"/>
+                                <button action="participantsTable.edit"/>
+                                <button action="participantsTable.remove"/>
+                                <button action="participantsTable.excel"/>
+                                <button action="participantsTable.copy"/>
+                            </buttonsPanel>
+                        </table>
+                    </tab>
+                </tabSheet>
+            </vbox>
+        </split>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
+    </layout>
+</window>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (c) 2016 Haulmont
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://caption">
+    <data>
+        <collection id="projectsDc" class="com.haulmont.timesheets.entity.Project" view="_local">
+            <loader id="projectsDl">
+                <query>
+                    <![CDATA[
+                    select pr
+                    from ts$Project pr,
+                        in(pr.participants) p
+                    where
+                        p.user = :user and
+                        pr.status = 'open'
+                    order by pr.name
+                    ]]>
+                </query>
+            </loader>
+        </collection>
+        <collection id="tasksDc" class="com.haulmont.timesheets.entity.Task" view="task-full">
+            <loader id="tasksDl">
+                <query>
+                    <![CDATA[select t from ts$Task t where t.project = :project]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <actions>
+        <action id="showCommandLine" shortcut="CTRL-ALT-Q"/>
+    </actions>
+
+    <layout expand="calendarHBox" spacing="true">
+        <hbox id="commandLineHBox" spacing="true" visible="false">
+            <fragment id="commandLine" screen="command-line-frame"/>
+            <hbox id="simpleViewHBox" visible="false" spacing="true">
+                <lookupField id="project" optionsContainer="projectsDc" inputPrompt="msg://com.haulmont.timesheets.entity/Task.project" width="200px"/>
+                <lookupField id="task" optionsContainer="tasksDc" inputPrompt="msg://com.haulmont.timesheets.entity/TimeEntry.task" width="200px"/>
+                <lookupField id="activityType" inputPrompt="msg://com.haulmont.timesheets.entity/TimeEntry.activityType" visible="false" width="200px"/>
+                <textField id="spentTime" inputPrompt="msg://com.haulmont.timesheets.entity/TimeEntry.timeInMinutes" width="200px"/>
+                <button id="simpleViewApply" caption="msg://caption.apply" invoke="simpleViewApply"/>
+            </hbox>
+            <hbox>
+                <checkBox id="showSimpleView" caption="msg://caption.showSimpleView" align="MIDDLE_LEFT"/>
+            </hbox>
+        </hbox>
+
+        <hbox width="100%">
+            <hbox align="MIDDLE_LEFT" spacing="true"/>
+            <label id="monthLabel" align="MIDDLE_CENTER" stylename="h1"/>
+            <hbox align="MIDDLE_RIGHT" spacing="true">
+                <button id="addTimeEntry" caption="msg://addTimeEntry" invoke="addTimeEntry" visible="false"/>
+                <linkButton id="showCommandLine" action="showCommandLine" icon="icons/gear.png" align="MIDDLE_RIGHT"/>
+                <linkButton align="MIDDLE_RIGHT" icon="font-icon:CHEVRON_LEFT" invoke="showPreviousMonth"/>
+                <linkButton caption="msg://today" invoke="setToday" align="MIDDLE_RIGHT"/>
+                <linkButton align="MIDDLE_RIGHT" icon="font-icon:CHEVRON_RIGHT" invoke="showNextMonth"/>
+                <dateField id="monthSelector" align="MIDDLE_RIGHT" resolution="DAY" stylename="simple"/>
+            </hbox>
+        </hbox>
+        <hbox id="calendarHBox" expand="calBox" width="100%">
+            <vbox id="calBox" height="100%"/>
+            <vbox id="summaryBox" height="100%" width="150px"/>
+        </hbox>
+        <hbox margin="true,false,false,false" width="100%">
+            <label id="monthSummary" align="MIDDLE_RIGHT"/>
+        </hbox>
+    </layout>
+</window>

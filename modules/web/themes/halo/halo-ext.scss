@@ -1,0 +1,121 @@
+@import "../halo/halo";
+
+@import "components/calendar/tscalendar";
+
+/* Define your theme modifications inside next mixin */
+@mixin halo-ext {
+  @include halo;
+
+  @include ts-calendar;
+
+  .v-button-remove {
+    color: #F15A5A;
+  }
+
+  .v-button-remove:hover {
+    color: #F46565;
+  }
+
+  .project-open,
+  .task-active,
+  .time-entry-approved {
+    color: #4EBA6F;
+  }
+
+  .project-closed,
+  .task-inactive,
+  .time-entry-rejected{
+    color: #F15A5A;
+  }
+
+  .time-entry-new{
+    color: #F0C419;
+  }
+
+  .expenses-new{
+      color: #F0C419;
+    }
+  .expenses-rejected {
+      color: #F15A5A;
+    }
+  .expenses-approved{
+      color: #4EBA6F;
+    }
+
+
+
+
+  .cuba-datefield-composition-simple .cuba-datefield {
+    width: auto !important;
+    height: auto;
+  }
+
+  .cuba-datefield-composition-simple .cuba-datefield-textfield {
+    display: none;
+  }
+
+  .cuba-datefield-composition-simple .cuba-datefield [class*="button"] {
+    position: relative;
+    border: 0px;
+    top: 0px;
+  }
+
+  .time-entry-new-bg {
+    @include valo-gradient(#FFDC00);
+  }
+
+  .time-entry-approved-bg {
+    @include valo-gradient(#5DE032);
+  }
+
+  .time-entry-rejected-bg {
+    @include valo-gradient(#FF837E);
+  }
+
+  .time-entry-closed-bg {
+    @include valo-gradient(#F0F0F0);
+  }
+
+  .holiday {
+    background: #EF525B;
+  }
+
+  $light-font-color: valo-font-color($v-selection-color, 0.9);
+
+  .holiday .v-button-link {
+    color: $light-font-color;
+  }
+
+  .v-table [class*="-row"].v-selected .time-entry-new-bg .v-button-link,
+  .v-table [class*="-row"].v-selected .time-entry-approved-bg .v-button-link,
+  .v-table [class*="-row"].v-selected .time-entry-closed-bg .v-button-link,
+  .v-table [class*="-row"].v-selected .time-entry-rejected-bg .v-button-link {
+    color: $v-link-font-color;
+  }
+
+  .v-table [class*="-row"].v-selected .v-button-link:focus {
+    border-color: $light-font-color;
+  }
+
+  .v-caption-h2 {
+    font-size: 14px;
+  }
+
+  .ace_editor {
+    font-size: 14px;
+  }
+
+  .v-label-overtime,
+  .v-label-month-summary-overtime,
+  .overtime-ag {
+    color: #f15a5a;
+  }
+
+  .v-label-month-summary,
+  .v-label-month-summary-overtime {
+    font-weight: bold;
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.5;
+  }
+}

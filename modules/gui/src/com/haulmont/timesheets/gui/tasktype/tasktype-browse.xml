@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (c) 2016 Haulmont
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="msg://browseCaption"
+        focusComponent="taskTypesTable"
+        messagesPack="com.haulmont.timesheets.gui.tasktype">
+    <data>
+        <collection id="taskTypesDc" class="com.haulmont.timesheets.entity.TaskType" view="_local">
+            <loader id="taskTypesDl">
+                <query>
+                    <![CDATA[select e from ts$TaskType e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode height="500"
+                width="800"
+                resizable="true"
+    />
+    <layout expand="taskTypesTable" spacing="true">
+        <filter id="filter" dataLoader="taskTypesDl">
+            <properties include=".*"/>
+        </filter>
+        <table id="taskTypesTable" width="100%" dataContainer="taskTypesDc">
+            <actions>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
+            </actions>
+            <columns>
+                <column id="name"/>
+                <column id="code"/>
+                <column id="description" maxTextLength="20"/>
+            </columns>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel" alwaysVisible="true">
+                <button id="createBtn" action="taskTypesTable.create"/>
+                <button id="editBtn" action="taskTypesTable.edit"/>
+                <button id="removeBtn" action="taskTypesTable.remove"/>
+            </buttonsPanel>
+        </table>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
+    </layout>
+</window>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (c) ${YEAR} ${PACKAGE_NAME}
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        xmlns:c="http://schemas.haulmont.com/cuba/screen/jpql_condition.xsd"
+        caption="msg://expensesApprove.caption"
+        messagesPack="com.haulmont.timesheets.gui.approve">
+    <data>
+        <collection id="expensesesDc" class="com.haulmont.timesheets.entity.Expenses" view="expenses-browse">
+            <loader id="expensesesDl" maxResults="1000">
+                <query>
+                    <![CDATA[select e from ts_Expenses e
+                            where
+                                exists (select pa from ts$ProjectParticipant pa
+                                    where pa.project = e.task.project and pa.user = :sessionUser
+                                    and (pa.role.code = 'manager' or pa.role.code = 'approver'))
+                                and e.date >= :dateFrom and e.date <= :dateTo]]>
+                    <condition>
+                        <and>
+                            <c:jpql>
+                                <c:where>e.task = :task</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:where>e.task.project = :project</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:where>e.user = :user</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:where>e.status = :status</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:where>e.user.group = :group</c:where>
+                            </c:jpql>
+                        </and>
+                    </condition>
+                </query>
+            </loader>
+        </collection>
+        <collection id="projectsDc" class="com.haulmont.timesheets.entity.Project" view="_minimal">
+            <loader id="projectsDl">
+                <query>
+                    <![CDATA[select e
+                         from
+                            ts$Project e
+                         where
+                            exists (
+                                select p from ts$ProjectParticipant p
+                                where
+                                p.user = :user
+                                and p.project = e
+                                and (p.role.code = 'manager' or p.role.code = 'approver'))
+                             or :superUser = true
+                         ]]>
+                </query>
+            </loader>
+        </collection>
+        <collection id="groupsDc" class="com.haulmont.cuba.security.entity.Group" view="_minimal">
+            <loader id="groupsDl">
+                <query>
+                    <![CDATA[select e from sec$Group e]]>
+                </query>
+            </loader>
+        </collection>
+        <collection id="tasksDc" class="com.haulmont.timesheets.entity.Task" view="_minimal">
+            <loader id="tasksDl">
+                <query>
+                    select t from ts$Task t where t.project = :project
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <assign name="fieldWidth" value="250px"/>
+
+    <layout expand="expensesesTable" spacing="true">
+        <grid spacing="true">
+            <columns>
+                <column/>
+                <column/>
+                <column/>
+                <column/>
+                <column/>
+                <column/>
+            </columns>
+            <rows>
+                <row>
+                    <label align="MIDDLE_CENTER" value="msg://caption.dateFrom"/>
+                    <dateField id="dateFrom" resolution="DAY" width="${fieldWidth}"/>
+                    <label align="MIDDLE_CENTER" value="msg://caption.dateTo"/>
+                    <dateField id="dateTo" resolution="DAY" width="${fieldWidth}"/>
+                    <label align="MIDDLE_CENTER" value="msg://com.haulmont.timesheets.entity/TimeEntry.status"/>
+                    <lookupField id="status" width="${fieldWidth}"/>
+                </row>
+                <row>
+                    <label align="MIDDLE_CENTER" value="msg://com.haulmont.timesheets.entity/Task.project"/>
+                    <lookupField id="project" optionsContainer="projectsDc" width="${fieldWidth}"/>
+                    <label align="MIDDLE_CENTER" value="msg://com.haulmont.timesheets.entity/TimeEntry.task"/>
+                    <lookupField id="task" optionsContainer="tasksDc" width="${fieldWidth}"/>
+                </row>
+                <row>
+                    <label align="MIDDLE_CENTER" value="msg://com.haulmont.cuba.security.entity/Group"/>
+                    <lookupField id="group" width="${fieldWidth}" optionsContainer="groupsDc"/>
+                    <label align="MIDDLE_CENTER" value="msg://com.haulmont.timesheets.entity/TimeEntry.user"/>
+                    <lookupField id="user" width="${fieldWidth}"/>
+                </row>
+            </rows>
+        </grid>
+        <groupTable id="expensesesTable" width="100%" aggregatable="true" multiselect="true"
+                    dataContainer="expensesesDc">
+            <actions>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
+                <action id="excel" type="excel"/>
+                <action id="refresh" type="refresh"/>
+            </actions>
+            <columns>
+                <group>
+                    <column id="task.project"/>
+                    <column id="task"/>
+                    <column id="user"/>
+                    <column id="date"/>
+                </group>
+                <column id="amount"/>
+                    <!--<formatter class="com.haulmont.timesheets.gui.util.HoursAndMinutesFormatter"/>
+                </column>-->
+               <!-- <column id="timeInHours">
+                    <aggregation type="SUM"/>
+                </column>-->
+                <!--<column id="overtime">
+                    <formatter class="com.haulmont.timesheets.gui.util.OvertimeFormatter"/>
+                </column>-->
+                <column id="status"/>
+                <column id="notes" maxTextLength="20"/>
+                <!--<column id="rejectionReason" maxTextLength="20"/>-->
+                <column id="activityType"/>
+            </columns>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel" alwaysVisible="true">
+                <button id="createBtn" action="expensesesTable.create"/>
+                <button id="editBtn" action="expensesesTable.edit"/>
+                <button id="removeBtn" action="expensesesTable.remove"/>
+                <button id="excelBtn" action="expensesesTable.excel"/>
+                <popupButton id="approve" caption="msg://approve" stylename="friendly"/>
+                <popupButton id="reject" caption="msg://reject" stylename="danger"/>
+                <button id="refreshBtn" action="expensesesTable.refresh"/>
+            </buttonsPanel>
+        </groupTable>
+    </layout>
+</window>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (c) 2016 Haulmont
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="msg://browseCaption"
+        focusComponent="tasksTable"
+        messagesPack="com.haulmont.timesheets.gui.task">
+    <data readOnly="true">
+        <collection id="tasksDc" class="com.haulmont.timesheets.entity.Task" view="task-full">
+            <loader id="tasksDl">
+                <query/>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode width="800"
+                height="500"
+                resizable="true"/>
+    <layout spacing="true" expand="tasksTable">
+        <filter id="filter" dataLoader="tasksDl">
+            <properties include=".*"/>
+        </filter>
+        <table id="tasksTable" width="100%" dataContainer="tasksDc">
+            <columns>
+                <column id="name"/>
+                <column id="code"/>
+                <column id="description" maxTextLength="20"/>
+                <column id="project"/>
+                <column id="type"/>
+                <column id="status"/>
+            </columns>
+            <rowsCount/>
+        </table>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
+    </layout>
+</window>

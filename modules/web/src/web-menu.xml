@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (c) 2016 Haulmont
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<menu-config xmlns="http://schemas.haulmont.com/cuba/menu.xsd">
+    <menu id="timesheets" insertBefore="reports">
+        <item screen="calendar-screen" shortcut="CTRL-ALT-C"/>
+        <item screen="simple-weekly-timesheets" shortcut="CTRL-ALT-W"/>
+        <item screen="ts$TimeEntry.browse"/>
+        <item screen="ts$Task.browse" shortcut="CTRL-ALT-T"/>
+    </menu>
+    <menu id="projects" insertAfter="timesheets">
+        <item screen="ts$Client.browse"/>
+        <item screen="ts$Project.browse" shortcut="CTRL-ALT-P"/>
+        <item screen="approve-screen" shortcut="CTRL-ALT-A"/>
+        <item screen="ts$TimeEntry.all-approve"/>
+        <item screen="ts$TimeEntry.all"/>
+        <item screen="charts-screen"/>
+        <item screen="ts_ExpensesApprove"/>
+    </menu>
+    <menu id="timesheet-settings" insertAfter="projects">
+        <item screen="work-time-settings" openType="DIALOG"/>
+        <item screen="ts$Holiday.browse"/>
+        <separator/>
+        <item screen="ts$TaskType.browse"/>
+        <item screen="ts$ActivityType.lookup"/>
+        <item screen="ts$TagType.browse"/>
+        <separator/>
+    </menu>
+    <menu id="expenses" insertAfter="timesheet-settings">
+        <item screen="ts_Expenses.browse" caption="mainMsg://menu_config.ts_Expenses.browse"/>
+    </menu>
+</menu-config>

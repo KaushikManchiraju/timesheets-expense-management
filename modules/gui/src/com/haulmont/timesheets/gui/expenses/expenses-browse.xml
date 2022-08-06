@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (c) ${YEAR} ${PACKAGE_NAME}
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        xmlns:c="http://schemas.haulmont.com/cuba/screen/jpql_condition.xsd"
+        caption="msg://expensesBrowse.caption"
+        focusComponent="expensesesTable"
+        messagesPack="com.haulmont.timesheets.gui.expenses">
+    <data>
+        <collection id="expensesesDc"
+                    class="com.haulmont.timesheets.entity.Expenses" view="expenses-browse">
+            <loader id="expensesesDl">
+                <query>
+                    <![CDATA[select e from ts_Expenses e where e.user = :user]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <layout expand="expensesesTable"
+            spacing="true">
+        <filter id="filter"
+                applyTo="expensesesTable"
+                dataLoader="expensesesDl">
+            <properties include=".*"/>
+        </filter>
+        <fragment id="commandLine" screen="command-line-frame"/>
+        <groupTable id="expensesesTable"
+                    width="100%" aggregatable="true" multiselect="true"
+                    dataContainer="expensesesDc">
+            <actions>
+                <action id="create" type="create"/>
+               <!--//<action id="edit" type="edit"/>-->
+                <action id="excel" type="excel"/>
+                <action id="remove" type="remove"/>
+            </actions>
+            <columns>
+                <column id="task"/>
+                <column id="amount"/>
+                <column id="date"/>
+                <column id="notes"/>
+                <column id="status"/>
+                <!--<column id="rejectionReason"/>-->
+                <column id="activityType"/>
+            </columns>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="createBtn" action="expensesesTable.create"/>
+                <!--<button id="editBtn" action="expensesesTable.edit"/>-->
+                <button id="removeBtn" action="expensesesTable.remove"/>
+                <button id="excelBtn" action="expensesesTable.excel"/>
+            </buttonsPanel>
+        </groupTable>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
+    </layout>
+</window>

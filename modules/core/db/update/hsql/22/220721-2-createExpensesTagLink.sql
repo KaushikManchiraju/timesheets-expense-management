@@ -1,0 +1,2 @@
+alter table TS_EXPENSES_TAG_LINK add constraint FK_EXPTAG_TAG foreign key (TAG_ID) references TS_TAG(ID);
+alter table TS_EXPENSES_TAG_LINK add constraint FK_EXPTAG_EXPENSES foreign key (EXPENSES_ID) references TS_EXPENSES(ID);

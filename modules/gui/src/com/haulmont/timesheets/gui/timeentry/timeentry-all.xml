@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (c) 2016 Haulmont
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://browseCaption"
+        focusComponent="timeEntriesTable"
+        messagesPack="com.haulmont.timesheets.gui.timeentry">
+    <data>
+        <collection id="timeEntriesDc" view="timeEntry-browse" class="com.haulmont.timesheets.entity.TimeEntry">
+            <loader id="timeEntriesDl">
+                <query>
+                    <![CDATA[
+                select e from ts$TimeEntry e
+                where exists (select 1 from ts$ProjectParticipant pa
+                                where pa.project = e.task.project and pa.user = :user
+                                and (pa.role.code = 'manager' or pa.role.code = 'approver'))
+                ]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <layout expand="timeEntriesTable" spacing="true">
+        <filter id="filter" dataLoader="timeEntriesDl">
+            <properties include=".*"/>
+        </filter>
+        <groupTable id="timeEntriesTable" width="100%" aggregatable="true" dataContainer="timeEntriesDc">
+            <actions>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="excel" type="excel"/>
+                <action id="remove" type="remove"/>
+            </actions>
+            <columns>
+                <column id="task.project"/>
+                <column id="task"/>
+                <column id="user"/>
+                <column id="date"/>
+                <column id="timeInMinutes">
+                    <formatter class="com.haulmont.timesheets.gui.util.HoursAndMinutesFormatter"/>
+                </column>
+                <column id="timeInHours">
+                    <aggregation type="SUM"/>
+                </column>
+                <column id="status"/>
+                <column id="description" maxTextLength="20"/>
+                <column id="rejectionReason" maxTextLength="20"/>
+                <column id="activityType"/>
+            </columns>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel" alwaysVisible="true">
+                <button id="createBtn" action="timeEntriesTable.create"/>
+                <button id="editBtn" action="timeEntriesTable.edit"/>
+                <button id="removeBtn" action="timeEntriesTable.remove"/>
+                <button id="excelBtn" action="timeEntriesTable.excel"/>
+            </buttonsPanel>
+        </groupTable>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
+    </layout>
+</window>
